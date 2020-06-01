@@ -44,19 +44,24 @@ global ds
 addpath('./supportingAlgorithms');
 
 % The range of y values to plot
-yRange = -1*particleSize:particleSize;
+yRange = -0.5*particleSize:0.5*particleSize;
 Img = zeros(length(yRange), length(yRange), zDepth);
 
 particleCoords = xyCoords;
 xzSlice = zeros(zDepth, length(yRange));
 % Loop through all time points for this particle
 for t = 1 : size(xyCoords,1)
-	xCoord = xyCoords(t,1);
-	yCoord = xyCoords(t,2);
-	%Assemble an XZ slice of the particle at a particular time
-	currentZ = zeros(1, zDepth);
+    xCoord = xyCoords(t,1);
+    yCoord = xyCoords(t,2);
+    %Assemble an XZ slice of the particle at a particular time
+    currentZ = zeros(1, zDepth);
+    if t == 1
+        zCenter = xyCoords(t,3);
+    else
+        zCenter = xyCoords(t-1,3);
+    end
 	for i = 0 : zDepth - 1
-		currentZ(i+1) = xyCoords(t,3)-(zDepth-1)/2 + i;
+        currentZ(i+1) = zCenter-(zDepth-1)/2 + i;
 		tempDSindex = getDSindex(currentZ(i+1), xyCoords(t,4));
 		img = readimage(ds, tempDSindex);
 		xzSlice(i+1,:) = img(yCoord+yRange(1):yCoord+yRange(end), xCoord);

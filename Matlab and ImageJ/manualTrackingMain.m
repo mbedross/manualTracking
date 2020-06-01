@@ -8,26 +8,29 @@ global ds
 global tNF
 global zNF
 global particleSize
+global zDepth
 masterDir = holoDir;
 
 addpath('C:\Users\manu\Documents\MATLAB\Tracking\Thesis_object_tracking_software\preProcessing')
 
 % User inputs
 particleSize = 30;
-numZplanes = 10;
+numZplanes = 200;
 zConversion = 25;          % How many microns is 1 cm in Koala units?
-zSeparation = 2.5;         % This is the physical separation between z-slices (in microns)
+zSeparation = 0.025;         % This is the physical separation between z-slices (in microns)
 n = [2048 2048];
-pixelPitchX = 350/2048;    % Size of each pixel in the image x direction (in microns)
+pixelPitchX = 360/2048;    % Size of each pixel in the image x direction (in microns)
 pixelPitchY = pixelPitchX; % Size of each pixel in the image y direction (in microns)
 voxelPitch = [pixelPitchX pixelPitchY zSeparation];
 type = type2track;
 trackPath = fullfile(holoDir, 'Manual Tracks');
 trackDir = dir(trackPath);
 Ntracks = length(trackDir)-2;           % minus 2 because of '.' and '..'
+%zDepth = 6*ceil((particleSize*pixelPitchX)/zSeparation)+1; % number of z-slices to use while tracking
+zDepth = 201;
 
 
-filePath = fullfile(masterDir, 'Stack', type);
+filePath = fullfile(masterDir, 'MeanStack', type);
 [zSorted] = zSteps(filePath);
 zNF = length(zSorted);
 
@@ -46,6 +49,7 @@ filename = fullfile(path, FileName);
 
 points = cell(1,1);
 points_all = cell(numZplanes,1);
+numParticle = 0;
 for i = 1 : Ntracks
     % Import the XY data from imageJ's Manual Tracking plugin
     fileName = fullfile(trackPath, sprintf('particle%05d.csv', i));
@@ -61,11 +65,11 @@ for i = 1 : Ntracks
     x = x(ia);
     y = y(ia);
     z = z(ia);
-    [zFilled] = fillmissing(z, 'linear', 'SamplePoints', time, 'EndValues', 'extrap');
+    z = rmmissing(z);
     
     % Convert time from frame numbers into seconds
-    time = fNumbers(time);
-    zCenter = round(mean(zFilled),1);
+    time = fNumbers(time)';
+    zCenter = ones(size(time)).*find(zSorted == round(mean(z),1));
     tempCoordsxy = [x y zCenter time];
     tempCoordsxyz = getParticleCoordsZ(tempCoordsxy);
     tempCoordsxyz(:,3) = zSorted(tempCoordsxyz(:,3));

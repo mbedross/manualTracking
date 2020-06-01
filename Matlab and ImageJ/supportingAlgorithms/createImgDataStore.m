@@ -26,7 +26,7 @@ global zSorted
 zNF = length(zSorted);
 
 for z = 1 : zNF
-    location{z} = fullfile(masterDir, 'MeanStack', char(type), sprintf('%0.3f', zSorted(z)));
+    location{z} = fullfile(masterDir, 'MeanStack', char(type), sprintf('%0.2f', zSorted(z)));
 end
 
 ds = datastore(location, 'IncludeSubfolders', true,'FileExtensions', '.tiff','Type', 'image');
