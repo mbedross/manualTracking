@@ -34,7 +34,6 @@ Ntracks = length(trackDir)-2;           % minus 2 because of '.' and '..'
 pixelPitch = 360/2048;                  % Pixel pitch in microns
 zSpacing = 1;                          % Conversion from koala units to um
 axisLabelSize = 16;
-axisDirection = -1;
 viewAz = 45;
 viewEl = 30;
 saveFile = 1;                            % Save new excel files?
@@ -209,13 +208,7 @@ ylabel(h, 'Time [s]', 'FontSize', axisLabelSize)
 path = fullfile(masterFilePath, 'trajectories');
 savefig(path)
 print(path,'-dpng','-r1000')
-% h2 = figure(2);
-% histogram(angles, 60, 'Normalization','probability')
-% ylabel('Relative Frequency [-]', 'FontSize', axisLabelSize)
-% xlabel('Turning Angle [degrees]', 'FontSize', axisLabelSize)
-% disp('...Total Mean and STD speed is...')
-% absMean = mean(meanSpeed)
-% absSTD = std(meanSpeed)
+
 save(fullfile(masterFilePath,'tracks.mat'), 'tracks', 'velocities',...
     'turningAngle', 'speed', 'meanSpeed', 'reOrientTimeScale_0_45',...
     'reOrientTimeScale_45_135', 'reOrientTimeScale_135_180')
